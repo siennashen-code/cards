@@ -5,6 +5,7 @@ public class UnoCard extends Card {
         super(value, suit);
     }
 
+
     @Override
     public void draw(PApplet sketch) {
         super.draw(sketch);
@@ -26,6 +27,7 @@ public class UnoCard extends Card {
                 sketch.fill(200);
                 break;
         }
+        
         sketch.rect(x, y, width, height);
 
         // text 
@@ -34,6 +36,8 @@ public class UnoCard extends Card {
         } else {
             sketch.fill(0);
         }
+
+
         sketch.textSize(14);
         // put on the upper left corner
         if (value == "Skip") {

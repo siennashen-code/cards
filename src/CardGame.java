@@ -23,6 +23,8 @@ public class CardGame {
     int drawButtonY = 400;
     int drawButtonWidth = 100;
     int drawButtonHeight = 35;
+    float[] drawButtonColor = {155, 0, 0};
+    
 
     public CardGame() {
         initializeGame();

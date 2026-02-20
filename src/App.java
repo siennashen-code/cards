@@ -2,15 +2,16 @@ import processing.core.PApplet;
 
 public class App extends PApplet {
 
-    CardGame cardGame = new MonopolyDeal();
+    CardGame cardGame = new BlackJack();
     private int timer;
 
     public static void main(String[] args) {
         PApplet.main("App");
     }
+    
     @Override
     public void settings() {
-        size(600, 600);   
+        size(750, 600);   
     }
 
     @Override
