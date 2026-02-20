@@ -1,4 +1,8 @@
+package Examples;
 import java.util.HashMap;
+
+import Card;
+import Hand;
 
 public class UnoComputer {
 	public UnoCard playCard(Hand h, UnoCard current) {

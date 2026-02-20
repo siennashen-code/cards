@@ -6,7 +6,6 @@ public class ClickableRectangle {
     int width;
     int height;
 
-
     boolean isClicked(int mouseX, int mouseY) {
         return mouseX >= x && mouseX <= x + width &&
                mouseY >= y && mouseY <= y + height;

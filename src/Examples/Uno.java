@@ -1,3 +1,8 @@
+package Examples;
+import Card;
+import CardGame;
+import ClickableRectangle;
+import Hand;
 import processing.core.PApplet;
 
 public class Uno extends CardGame {

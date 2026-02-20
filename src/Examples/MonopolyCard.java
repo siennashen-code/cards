@@ -1,3 +1,4 @@
+import Card;
 import processing.core.PApplet;
 
 public class MonopolyCard extends Card {

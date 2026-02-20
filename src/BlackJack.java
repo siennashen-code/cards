@@ -1,9 +1,11 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import processing.core.PApplet;
 
 public class Blackjack extends CardGame {
+    
+    PApplet app = new PApplet();
     Hand dealerHand; 
-
     Boolean dealed = false;
     Boolean playerOneDone = false;
     boolean dealerDone = false;
@@ -11,6 +13,11 @@ public class Blackjack extends CardGame {
     Button dealButton;
     Button hitButton;
     Button standButton;
+
+    
+    public Blackjack() {
+        initializeGame();
+    }
 
     @Override
     protected void initializeGame() {
@@ -20,18 +27,24 @@ public class Blackjack extends CardGame {
         dealButton = new Button(dealButtonColor, dealTextColor, "Deal");
         dealButton.width = 100;
         dealButton.height = 50;
+        dealButton.x = App.width/2;
+        dealButton.y = App.height/2;
 
         float[] hitButtonColor = { 255, 0, 0 };
         float[] hitTextColor = { 255, 255, 255 };
         hitButton = new Button(hitButtonColor, hitTextColor, "Hit");
         hitButton.width = 100;
         hitButton.height = 50;
+        hitButton.x = App.width/2 - 60;
+        hitButton.y = App.height - 70;
 
         float[] standButtonColor = { 255, 0, 0 };
         float[] standTextColor = { 255, 255, 255 };
         standButton = new Button(standButtonColor, standTextColor, "Stand");
         standButton.width = 100;
         standButton.height = 50;
+        standButton.x = App.width/2 + 60;
+        standButton.y = App.height - 70;
 
         // Initialize decks and hands
         deck = new ArrayList<>();
@@ -67,7 +80,7 @@ public class Blackjack extends CardGame {
         }
     }
 
-    private void initialDeal() { //Deals 2 cards to player and dealer
+    public void initialDeal() { //Deals 2 cards to player and dealer
         dealCards(2, playerOneHand);
         dealCards(2, dealerHand);
 
@@ -131,6 +144,13 @@ public class Blackjack extends CardGame {
             System.out.println("It's a Push!");
 
         gameActive = false;
+    }
+
+    @Override
+    public void drawChoices(PApplet app){
+        dealButton.draw(app); //what does the this do?
+        hitButton.draw(app);
+        standButton.draw(app);
     }
 
 }

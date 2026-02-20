@@ -28,7 +28,7 @@ public class CardGame {
 
     public CardGame() {
         initializeGame();
-        dealCards(6);
+        // dealCards(6);
     }
 
     protected void initializeGame() {

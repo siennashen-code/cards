@@ -1,4 +1,9 @@
+package Examples;
 import java.util.HashMap;
+
+import Card;
+import CardGame;
+import Hand;
 
 public class MonopolyDeal extends CardGame {
     // i need to be able to steal sets rather than just one property card
