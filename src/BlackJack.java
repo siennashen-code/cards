@@ -81,21 +81,27 @@ public class Blackjack extends CardGame {
     }
 
     public void initialDeal() { //Deals 2 cards to player and dealer
-        dealCards(2, playerOneHand);
-        dealCards(2, dealerHand);
-
-        //Positions player and dealer cards
-        playerOneHand.positionCards(50, 450, 80, 120, 20);
-        dealerHand.positionCards(50, 50, 80, 120, 20);
+        playerOneHand = dealCards(2, playerOneHand);
+        dealerHand = dealCards(2, dealerHand);
     }
 
-    protected void dealCards(int numCards, Hand targetHand) { //Deals 1 card to somebody
+    protected Hand dealCards(int numCards, Hand targetHand) { //Deals 1 card to somebody
         for (int i = 0; i < numCards; i++) {
             if (!deck.isEmpty()) {
                 targetHand.addCard(deck.remove(0));
             }
         }
+
+        int targetStart = 750/2-(80*targetHand.getSize()+10*(targetHand.getSize()-1))/2;
+        if (targetHand.equals(playerOneHand)){
+            targetHand.positionCards(targetStart, (hitButton.y+300)/2-60, 80, 120, 90);
+        } else if (targetHand.equals(dealerHand)){
+            targetHand.positionCards(targetStart, 100, 80, 120, 90);
+        }
+
+        return targetHand;
     }
+
 
     private void dealerTurn() {
         // Standard House Rules: Dealer hits until 17 or higher

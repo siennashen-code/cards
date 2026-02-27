@@ -13,14 +13,16 @@ public class Button extends ClickableRectangle {
 
     @Override
     public void draw(PApplet app) {
+        app.push();
         app.rectMode(app.CENTER);
         app.textAlign(app.CENTER, app.CENTER);
 
         app.fill(rectColor[0], rectColor[1], rectColor[2]);
-        app.rect(x, y, width, height);
+        app.rect(x, y, width, height, 10);
 
         app.textSize(25);
         app.fill(textColor[0], textColor[1], textColor[2]);
-        app.text(text, x, y);
+        app.text(text, x, y, 10);
+        app.pop();
     } 
 }

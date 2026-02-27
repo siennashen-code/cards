@@ -68,10 +68,6 @@ public class CardGame {
             card.setTurned(true);
             playerTwoHand.addCard(card);
         }
-
-        // position cards
-        playerOneHand.positionCards(50, 450, 80, 120, 20);
-        playerTwoHand.positionCards(50, 50, 80, 120, 20);
     }
 
     protected boolean isValidPlay(Card card) {
