@@ -25,10 +25,28 @@ public class CardGame {
     int drawButtonHeight = 35;
     float[] drawButtonColor = {155, 0, 0};
     
+    CardGame game;
+    private int mouseX;
+    private int mouseY;
+
+    void setup() {
+        getSize(800, 600);
+        game = new CardGame(); // This creates the 52-card deck automatically
+        game.dealCards(2);    // Deal 2 cards to each player to start
+    }
+
+    void mousePressed() {
+    // Check if the player clicked the draw button
+    game.handleDrawButtonClick(mouseX, mouseY);
+  
+    // Check if the player clicked a specific card in their hand
+    game.handleCardClick(mouseX, mouseY);
+    }
+
 
     public CardGame() {
         initializeGame();
-        // dealCards(6);
+        //dealCards(2);
     }
 
     protected void initializeGame() {
@@ -68,6 +86,10 @@ public class CardGame {
             card.setTurned(true);
             playerTwoHand.addCard(card);
         }
+
+        // position cards
+        playerOneHand.positionCards(50, 450, 80, 120, 20);
+        playerTwoHand.positionCards(50, 50, 80, 120, 20);
     }
 
     protected boolean isValidPlay(Card card) {
@@ -191,4 +213,10 @@ public class CardGame {
         // this method is available for overriding
         // if you want to draw additional things (like Uno's wild color choices)
     }
+    public void revealComputerCard() {
+    for (int i = 0; i < playerTwoHand.getSize(); i++) {
+        playerTwoHand.getCard(i).setTurned(false);
+    }
+    }
 }
+
