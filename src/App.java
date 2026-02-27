@@ -6,7 +6,7 @@ public class App extends PApplet {
     public static int height = 600;
 
     CardGame cardGame = new BlackJack();
-    private int timer;
+    
 
     public static void main(String[] args) {
         PApplet.main("App");

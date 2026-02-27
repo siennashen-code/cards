@@ -86,12 +86,25 @@ public class CardGame extends Hand{
             card.setTurned(true);
             playerTwoHand.addCard(card);
         }
+        
 
         // position cards
         playerOneHand.positionCards(50, 450, 80, 120, 20);
         playerTwoHand.positionCards(50, 50, 80, 120, 20);
     }
+    protected void draw() {
+        background(0, 120, 0);
 
+        playerOneHand.draw(this);
+        playerTwoHand.draw(this);
+
+        fill(drawButtonColor[0], drawButtonColor[1], drawButtonColor[2]);
+        rect(drawButton.x, drawButton.y, drawButton.width, drawButton.height);
+
+        fill(255);
+        textAlign(CENTER, CENTER);
+        text("Hit", drawButton.x + drawButton.width / 2, drawButton.y + drawButton.height / 2);
+    }
     protected boolean isValidPlay(Card card) {
         return true;
     }
@@ -213,4 +226,10 @@ public class CardGame extends Hand{
         // this method is available for overriding
         // if you want to draw additional things (like Uno's wild color choices)
     }
+    public void revealComputerCard() {
+    for (int i = 0; i < playerTwoHand.getSize(); i++) {
+        playerTwoHand.getCard(i).setTurned(false);
+    }
+    }
 }
+
