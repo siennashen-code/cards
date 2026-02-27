@@ -3,7 +3,7 @@ import java.util.Collections;
 
 import processing.core.PApplet;
 
-public class CardGame {
+public class CardGame extends Hand{
     // Core game components
     ArrayList<Card> deck = new ArrayList<>();
     Hand playerOneHand;
@@ -25,10 +25,28 @@ public class CardGame {
     int drawButtonHeight = 35;
     float[] drawButtonColor = {155, 0, 0};
     
+    CardGame game;
+    private int mouseX;
+    private int mouseY;
+
+    void setup() {
+        getSize(800, 600);
+        game = new CardGame(); // This creates the 52-card deck automatically
+        game.dealCards(2);    // Deal 2 cards to each player to start
+    }
+
+    void mousePressed() {
+    // Check if the player clicked the draw button
+    game.handleDrawButtonClick(mouseX, mouseY);
+  
+    // Check if the player clicked a specific card in their hand
+    game.handleCardClick(mouseX, mouseY);
+    }
+
 
     public CardGame() {
         initializeGame();
-        // dealCards(6);
+        //dealCards(2);
     }
 
     protected void initializeGame() {

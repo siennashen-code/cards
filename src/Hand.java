@@ -12,7 +12,10 @@ public class Hand {
     public void addCard(Card card) {
         cards.add(card);
     }
-    
+    public int getSize(int x, int y) {
+    return cards.size(); // Replace 'cards' with the name of your ArrayList in Hand.java
+    }
+
     public void removeCard(Card card) {
         cards.remove(card);
     }
