@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import processing.core.PApplet;
 
-public class BlackJack extends CardGame {
+public class Blackjack extends CardGame {
     
     PApplet app = new PApplet();
     Hand dealerHand; 
@@ -13,11 +13,6 @@ public class BlackJack extends CardGame {
     Button dealButton;
     Button hitButton;
     Button standButton;
-
-    
-    public BlackJack() {
-        initializeGame();
-    }
 
     @Override
     protected void initializeGame() {
