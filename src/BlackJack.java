@@ -1,18 +1,25 @@
 import java.util.ArrayList;
 import java.util.Collections;
+
 import processing.core.PApplet;
+import processing.core.PImage;
 
 public class Blackjack extends CardGame {
-    
-    PApplet app = new PApplet();
     Hand dealerHand; 
     Boolean dealed = false;
-    Boolean playerOneDone = false;
-    boolean dealerDone = false;
 
     Button dealButton;
     Button hitButton;
     Button standButton;
+
+    public static int width = 750;
+    public static int height = 700;
+
+    static PImage deckImg;
+
+    Blackjack(){
+        super();
+    }
 
     @Override
     protected void initializeGame() {
@@ -22,24 +29,24 @@ public class Blackjack extends CardGame {
         dealButton = new Button(dealButtonColor, dealTextColor, "Deal");
         dealButton.width = 100;
         dealButton.height = 50;
-        dealButton.x = App.width/2;
-        dealButton.y = App.height/2;
+        dealButton.x = width/2;
+        dealButton.y = height/2;
 
         float[] hitButtonColor = { 255, 0, 0 };
         float[] hitTextColor = { 255, 255, 255 };
         hitButton = new Button(hitButtonColor, hitTextColor, "Hit");
         hitButton.width = 100;
         hitButton.height = 50;
-        hitButton.x = App.width/2 - 60;
-        hitButton.y = App.height - 70;
+        hitButton.x = width/2 - 60;
+        hitButton.y = height-50;
 
         float[] standButtonColor = { 255, 0, 0 };
         float[] standTextColor = { 255, 255, 255 };
         standButton = new Button(standButtonColor, standTextColor, "Stand");
         standButton.width = 100;
         standButton.height = 50;
-        standButton.x = App.width/2 + 60;
-        standButton.y = App.height - 70;
+        standButton.x = width/2 + 60;
+        standButton.y = height-50;
 
         // Initialize decks and hands
         deck = new ArrayList<>();
@@ -50,6 +57,7 @@ public class Blackjack extends CardGame {
 
         createDeck();
         Collections.shuffle(deck);
+        
     }
 
     @Override
@@ -63,15 +71,14 @@ public class Blackjack extends CardGame {
         if (dealButton.isClicked(mouseX, mouseY) && !dealed) {
             initialDeal();
             dealed = true;
-        } else if (hitButton.isClicked(mouseX, mouseY) && dealed && !playerOneDone) {
+        } else if (hitButton.isClicked(mouseX, mouseY) && dealed && playerOneTurn) {
             dealCards(1, playerOneHand);
-            if (calculateScore(playerOneHand) > 21) {
-                playerOneDone = true;
-                determineWinner();
-            }
-        } else if (standButton.isClicked(mouseX, mouseY) && dealed && !playerOneDone) {
-            playerOneDone = true;
-            dealerTurn();
+            // if (calculateScore(playerOneHand) > 21) {
+                
+            //     gameActive = false;
+            // }
+        } else if (standButton.isClicked(mouseX, mouseY) && dealed && playerOneTurn) {
+            playerOneTurn = false;
         }
     }
 
@@ -89,25 +96,21 @@ public class Blackjack extends CardGame {
 
         int targetStart = 750/2-(80*targetHand.getSize()+10*(targetHand.getSize()-1))/2;
         if (targetHand.equals(playerOneHand)){
-            targetHand.positionCards(targetStart, (hitButton.y+300)/2-60, 80, 120, 90);
+            targetHand.positionCards(targetStart, height-230, 80, 120, 90);
         } else if (targetHand.equals(dealerHand)){
-            targetHand.positionCards(targetStart, 100, 80, 120, 90);
+            targetHand.positionCards(targetStart, 110, 80, 120, 90);
         }
 
         return targetHand;
     }
 
+    @Override
+    public void handleComputerTurn() {
+        dealCards(1,dealerHand);
 
-    private void dealerTurn() {
-        // Standard House Rules: Dealer hits until 17 or higher
-        while (calculateScore(dealerHand) < 17) {
-            dealCards(1, dealerHand);
-        }
-        dealerDone = true;
-        determineWinner();
     }
 
-    private int calculateScore(Hand hand) { //Calculates sum of all card values
+    int calculateScore(Hand hand) { //Calculates sum of all card values
         int score = 0;
 
         for (Card c : hand.getCards()) {
@@ -129,27 +132,26 @@ public class Blackjack extends CardGame {
 
     }
 
-    private void determineWinner() {
+    String determineWinner() {
         int pScore = calculateScore(playerOneHand);
         int dScore = calculateScore(dealerHand);
 
         if (pScore > 21)
-            System.out.println("Player Busted! Dealer Wins.");
+            return "Dealer wins!";
         else if (dScore > 21)
-            System.out.println("Dealer Busted! Player Wins.");
+            return "You win!";
         else if (pScore > dScore)
-            System.out.println("Player Wins!");
+            return "You win!";
         else if (dScore > pScore)
-            System.out.println("Dealer Wins!");
+            return "Dealer Wins!";
         else
-            System.out.println("It's a Push!");
-
-        gameActive = false;
+            return "You tied!";
     }
 
     @Override
     public void drawChoices(PApplet app){
-        dealButton.draw(app); //what does the this do?
+
+        dealButton.draw(app);
         hitButton.draw(app);
         standButton.draw(app);
     }
