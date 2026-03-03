@@ -1,10 +1,10 @@
 import processing.core.PApplet;
-import processing.core.PConstants;
 
 public class App extends PApplet {
 
     Blackjack cardGame = new Blackjack();
     int timer = 0;
+    boolean roundOver = false;;
 
     public static void main(String[] args) {
         PApplet.main("App");
@@ -12,7 +12,6 @@ public class App extends PApplet {
 
     @Override
     public void settings() {
-        // size(750, 700);
         size(Blackjack.width, Blackjack.height);
         Blackjack.deckImg = loadImage("deckImg.png");
         cardGame.initializeGame();
@@ -22,7 +21,7 @@ public class App extends PApplet {
     public void draw() {
         background(0, 100, 0);
 
-        if (cardGame.gameActive) {
+        if (!roundOver) {
             imageMode(CENTER);
             image(Blackjack.deckImg, width / 2, height / 2, 160, 200);
             gamePlay();
@@ -33,6 +32,7 @@ public class App extends PApplet {
     }
 
     public void gamePlay() {
+        System.out.println(cardGame.playerOneHand.calculateScore());
         if (!cardGame.dealed) {
             cardGame.dealButton.draw(this);
         } else {
@@ -40,27 +40,28 @@ public class App extends PApplet {
             cardGame.playerOneHand.draw(this);
 
             if (cardGame.playerOneTurn) {
-                cardGame.hitButton.draw(this);
-                cardGame.standButton.draw(this);
-               
-                if (cardGame.calculateScore(cardGame.playerOneHand) > 21) {
-                    cardGame.playerOneTurn = false;
-                    if (timer == 120){
-                        timer = 0;
-                        cardGame.gameActive = false;
-                    }
-                    timer ++;
+                if(cardGame.gameActive){
+                    cardGame.hitButton.draw(this);
+                    cardGame.standButton.draw(this);
                 }
-        
+
+                if (cardGame.playerOneHand.calculateScore() > 21) {
+                    cardGame.gameActive = false;
+                    if (timer == 60) {
+                        timer = 0;
+                        roundOver = true;
+                        cardGame.playerOneTurn = false;
+                    }
+                    timer++;
+                }
+
             } else {
                 if (timer == 60) {
                     timer = 0;
-                    if (cardGame.calculateScore(cardGame.dealerHand) < 17) {
-                        System.out.println("Dealer Drawing...");
-                        cardGame.dealCards(1, cardGame.dealerHand);
-
+                    if (cardGame.dealerHand.calculateScore() < 17) {
+                        cardGame.handleComputerTurn();
                     } else {
-                        cardGame.gameActive = false;
+                        roundOver = true;
                     }
                 }
                 timer++;
@@ -73,14 +74,16 @@ public class App extends PApplet {
         push();
         textAlign(CENTER, CENTER);
         text(cardGame.determineWinner(), width / 2, height / 2);
-        text("Your score: " + cardGame.calculateScore(cardGame.playerOneHand), width / 2, height / 2 - 20);
-        text("Dealer score: " + cardGame.calculateScore(cardGame.dealerHand), width / 2, height / 2 - 40);
+        text("Your score: " + cardGame.playerOneHand.calculateScore(), width / 2, height / 2 - 20);
+        text("Dealer score: " + cardGame.dealerHand.calculateScore(), width / 2, height / 2 - 40);
         pop();
     }
 
     @Override
     public void mousePressed() {
-        cardGame.handleButtonClick(mouseX, mouseY);
+        if (cardGame.gameActive) {
+            cardGame.handleButtonClick(mouseX, mouseY);
+        }
     }
 
 }

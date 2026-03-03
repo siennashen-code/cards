@@ -53,7 +53,7 @@ public class Hand {
     }
 
     void draw(PApplet sketch) {
-        for (Card card : cards) {
+        for (Card card : getCards()) {
             card.draw(sketch);
         }
     }

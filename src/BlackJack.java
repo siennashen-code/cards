@@ -5,7 +5,8 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 public class Blackjack extends CardGame {
-    Hand dealerHand; 
+    BlackjackHand dealerHand = new BlackjackHand("dealer"); 
+    BlackjackHand playerOneHand = new BlackjackHand("player");
     Boolean dealed = false;
 
     Button dealButton;
@@ -48,11 +49,9 @@ public class Blackjack extends CardGame {
         standButton.x = width/2 + 60;
         standButton.y = height-50;
 
-        // Initialize decks and hands
+        // Initialize decks
         deck = new ArrayList<>();
         discardPile = new ArrayList<>();
-        playerOneHand = new Hand();
-        dealerHand = new Hand();
         gameActive = true;
 
         createDeck();
@@ -67,74 +66,60 @@ public class Blackjack extends CardGame {
         }
     }
 
+    @Override
+    public void drawCard(Hand hand){
+         if (deck != null && !deck.isEmpty()) {
+            hand.addCard(deck.remove(0));
+        } else if (discardPile != null && discardPile.size() > 1) {
+            // Reshuffle discard pile into deck if deck is empty
+            lastPlayedCard = discardPile.remove(discardPile.size() - 1);
+            deck.addAll(discardPile);
+            discardPile.clear();
+            discardPile.add(lastPlayedCard);
+            Collections.shuffle(deck);
+
+            if (!deck.isEmpty()) {
+                hand.addCard(deck.remove(0));
+            }
+        }
+
+        int start = 750/2-(80*hand.getSize()+10*(hand.getSize()-1))/2;
+        if (hand.equals(playerOneHand)){
+            hand.positionCards(start, 700-230, 80, 120, 90);
+            System.out.println("positioned");
+        } else if (hand.equals(dealerHand)){
+            hand.positionCards(start, 110, 80, 120, 90);
+        }
+        
+    }
+    
     public void handleButtonClick(int mouseX, int mouseY) {
         if (dealButton.isClicked(mouseX, mouseY) && !dealed) {
             initialDeal();
             dealed = true;
         } else if (hitButton.isClicked(mouseX, mouseY) && dealed && playerOneTurn) {
-            dealCards(1, playerOneHand);
-            // if (calculateScore(playerOneHand) > 21) {
-                
-            //     gameActive = false;
-            // }
+            drawCard(playerOneHand);
         } else if (standButton.isClicked(mouseX, mouseY) && dealed && playerOneTurn) {
             playerOneTurn = false;
         }
     }
 
     public void initialDeal() { //Deals 2 cards to player and dealer
-        playerOneHand = dealCards(2, playerOneHand);
-        dealerHand = dealCards(2, dealerHand);
-    }
-
-    protected Hand dealCards(int numCards, Hand targetHand) { //Deals 1 card to somebody
-        for (int i = 0; i < numCards; i++) {
-            if (!deck.isEmpty()) {
-                targetHand.addCard(deck.remove(0));
-            }
-        }
-
-        int targetStart = 750/2-(80*targetHand.getSize()+10*(targetHand.getSize()-1))/2;
-        if (targetHand.equals(playerOneHand)){
-            targetHand.positionCards(targetStart, height-230, 80, 120, 90);
-        } else if (targetHand.equals(dealerHand)){
-            targetHand.positionCards(targetStart, 110, 80, 120, 90);
-        }
-
-        return targetHand;
+        drawCard(playerOneHand);
+        drawCard(playerOneHand);
+        drawCard(dealerHand);
+        drawCard(dealerHand);
     }
 
     @Override
     public void handleComputerTurn() {
-        dealCards(1,dealerHand);
-
+        drawCard(dealerHand);
     }
 
-    int calculateScore(Hand hand) { //Calculates sum of all card values
-        int score = 0;
-
-        for (Card c : hand.getCards()) {
-            String value = c.value; 
-            if (value.equals("J") || value.equals("Q") || value.equals("K")) {
-                score += 10;
-            } else if (value.equals("A")) {
-                if (score + 11 < 21) { //Ace can either be worth 1 or 11
-                    score += 11;
-                } else {
-                    score += 1;
-                }
-            } else {
-                score += Integer.valueOf(value);
-            }
-        }
-
-        return score;
-
-    }
 
     String determineWinner() {
-        int pScore = calculateScore(playerOneHand);
-        int dScore = calculateScore(dealerHand);
+        int pScore = playerOneHand.calculateScore();
+        int dScore = dealerHand.calculateScore();
 
         if (pScore > 21)
             return "Dealer wins!";
