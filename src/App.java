@@ -74,8 +74,6 @@ public class App extends PApplet {
         push();
         textAlign(CENTER, CENTER);
         text(cardGame.determineWinner(), width / 2, height / 2);
-        text("Your score: " + cardGame.playerOneHand.calculateScore(), width / 2, height / 2 - 20);
-        text("Dealer score: " + cardGame.dealerHand.calculateScore(), width / 2, height / 2 - 40);
         pop();
     }
 

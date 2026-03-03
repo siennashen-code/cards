@@ -1,3 +1,5 @@
+import processing.core.PApplet;
+
 public class BlackjackHand extends Hand { 
 
     BlackjackHand(String player){
@@ -26,7 +28,14 @@ public class BlackjackHand extends Hand {
 
     }
 
-
-
-    
+    @Override
+    void draw(PApplet sketch) {
+        for (Card card : getCards()) {
+            card.draw(sketch);
+            if (card.equals(getCards().get(getSize()-1))){
+                sketch.fill(255);
+                sketch.text(calculateScore(), card.x + 90, card.y + 120);
+            }
+        }
+    }  
 }
