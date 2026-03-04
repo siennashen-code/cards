@@ -5,58 +5,87 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 public class Blackjack extends CardGame {
-    BlackjackHand dealerHand = new BlackjackHand("dealer");
-    BlackjackHand playerOneHand = new BlackjackHand("player");
+    BlackjackHand dealerHand;
+    BlackjackHand playerOneHand;
+    int playerMoney;
     Boolean dealed = false;
 
     Button dealButton;
     Button hitButton;
     Button standButton;
 
+    Button againButton;
+    Button endButton;
+
+    Button startButton;
+
     public static int width = 750;
     public static int height = 700;
 
     static PImage deckImg;
+    static PImage backgroundImg;
 
-    Blackjack() {
-        super();
-    }
+    boolean roundOver = false;
+    boolean newGame = true;
+
+    int page = 0;
 
     @Override
     protected void initializeGame() {
+        page = 0;
+        roundOver = false;
         // Initialize buttons
-        float[] dealButtonColor = { 255, 0, 0 };
-        float[] dealTextColor = { 255, 255, 255 };
-        dealButton = new Button(dealButtonColor, dealTextColor, "Deal");
+        float[] buttonColor = { 255, 0, 0 };
+        float[] textColor = { 255, 255, 255 };
+
+        dealButton = new Button(buttonColor, textColor, "Deal");
         dealButton.width = 100;
         dealButton.height = 50;
         dealButton.x = width / 2;
         dealButton.y = height / 2;
 
-        float[] hitButtonColor = { 255, 0, 0 };
-        float[] hitTextColor = { 255, 255, 255 };
-        hitButton = new Button(hitButtonColor, hitTextColor, "Hit");
+        hitButton = new Button(buttonColor, textColor, "Hit");
         hitButton.width = 100;
         hitButton.height = 50;
         hitButton.x = width / 2 - 60;
         hitButton.y = height - 50;
 
-        float[] standButtonColor = { 255, 0, 0 };
-        float[] standTextColor = { 255, 255, 255 };
-        standButton = new Button(standButtonColor, standTextColor, "Stand");
+        standButton = new Button(buttonColor, textColor, "Stand");
         standButton.width = 100;
         standButton.height = 50;
         standButton.x = width / 2 + 60;
         standButton.y = height - 50;
 
+        againButton = new Button(buttonColor, textColor, "Another Round!");
+        againButton.width = 200;
+        againButton.height = 50;
+        againButton.x = width / 2 - 100;
+        againButton.y = 525;
+
+        endButton = new Button(buttonColor, textColor, "End Game");
+        endButton.width = 150;
+        endButton.height = 50;
+        endButton.x = width / 2 + 100;
+        endButton.y = 525;
+
+        startButton = new Button(buttonColor, textColor, "New Game");
+        startButton.width = 150;
+        startButton.height = 50;
+        startButton.x = width / 2;
+        startButton.y = 525;
+
         // Initialize decks
         deck = new ArrayList<>();
         discardPile = new ArrayList<>();
+        dealerHand = new BlackjackHand("dealer");
+        playerOneHand = new BlackjackHand("player");
         gameActive = true;
 
+        playerOneTurn = true;
+
+        deck = new ArrayList<>();
         createDeck();
         Collections.shuffle(deck);
-
     }
 
     @Override
@@ -92,13 +121,32 @@ public class Blackjack extends CardGame {
     }
 
     public void handleButtonClick(int mouseX, int mouseY) {
-        if (dealButton.isClicked(mouseX, mouseY) && !dealed) {
-            initialDeal();
-            dealed = true;
-        } else if (hitButton.isClicked(mouseX, mouseY) && dealed && playerOneTurn) {
-            drawCard(playerOneHand);
-        } else if (standButton.isClicked(mouseX, mouseY) && dealed && playerOneTurn) {
-            playerOneTurn = false;
+        if (page == 0) {
+            initializeGame();
+            if (dealButton.isClicked(mouseX, mouseY)) {
+                initialDeal();
+                page = 1;
+            }
+        } else if (page == 1) {
+            if (hitButton.isClicked(mouseX, mouseY) && playerOneTurn) {
+                drawCard(playerOneHand);
+            } else if (standButton.isClicked(mouseX, mouseY) && playerOneTurn) {
+                playerOneTurn = false;
+            }
+        } else if (page == 2) {
+            if (againButton.isClicked(mouseX, mouseY)) {
+                initializeGame();
+                newGame = false;
+            } else if (endButton.isClicked(mouseX, mouseY)) {
+                page = 3;
+                System.out.println("got to page 3!");
+            }
+        } if (page == 3){
+            if (startButton.isClicked(mouseX, mouseY)){
+                initializeGame();
+                playerMoney = 0;
+                newGame = true;
+            }
         }
     }
 
@@ -118,25 +166,46 @@ public class Blackjack extends CardGame {
         int pScore = playerOneHand.calculateScore();
         int dScore = dealerHand.calculateScore();
 
-        if (pScore > 21)
+        if (pScore > 21) {
             return "BUSTED!\nDealer wins";
-        else if (dScore > 21)
+        } else if (dScore > 21) {
             return "DEALER BUSTED!\nYou win";
-        else if (pScore > dScore)
-            return "Your Score: " + playerOneHand.calculateScore() + "\n" +
-                    "Dealer Score: " + dealerHand.calculateScore() + "\n"
+        } else if (pScore > dScore) {
+            return "Dealer is done." + "\n" +
+                    "Your cards added to: " + playerOneHand.calculateScore() + "\n" +
+                    "Dealer's cards added to: " + dealerHand.calculateScore() + "\n"
                     + "You win!";
-        else if (dScore > pScore)
-            return "Your Score: " + playerOneHand.calculateScore() + "\n" +
-                    "Dealer Score: " + dealerHand.calculateScore() + "\n"
+        } else if (dScore > pScore) {
+            return "Dealer is done." + "\n" +
+                    "Your cards added to: " + playerOneHand.calculateScore() + "\n" +
+                    "Dealer's cards added to: " + dealerHand.calculateScore() + "\n"
                     + "Dealer wins!";
-        else
+        } else {
             return "PUSH!\nYou tied";
+        }
+    }
+
+    void updateBalance(){
+         int pScore = playerOneHand.calculateScore();
+        int dScore = dealerHand.calculateScore();
+
+        if (pScore > 21) {
+                playerMoney -= 5;
+        } else if (dScore > 21) {
+            playerMoney += 5;
+          
+        } else if (pScore > dScore) {
+            playerMoney += 5;
+            
+        } else if (dScore > pScore) {
+            playerMoney -= 5;
+           
+        } 
+
     }
 
     @Override
     public void drawChoices(PApplet app) {
-
         dealButton.draw(app);
         hitButton.draw(app);
         standButton.draw(app);

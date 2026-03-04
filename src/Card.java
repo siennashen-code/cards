@@ -81,7 +81,7 @@ public class Card extends ClickableRectangle {
     }
 
     public void draw(PApplet sketch) {
-
+        sketch.textSize(25);
         if (turned) {
             sketch.fill(150);
             sketch.rect(x, y, width, height);
