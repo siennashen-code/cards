@@ -1,6 +1,6 @@
 import processing.core.PApplet;
 
-public class Button extends ClickableRectangle {
+public class Button extends ClickableRectangle { // ClickableRectangle but with text = Button
     float[] rectColor = new float[3];
     float[] textColor = new float[3];
     String text;

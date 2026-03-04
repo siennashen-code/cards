@@ -5,18 +5,17 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 public class Blackjack extends CardGame {
+    // Player features
     BlackjackHand dealerHand;
     BlackjackHand playerOneHand;
     int playerMoney;
-    Boolean dealed = false;
 
+    // Buttons
     Button dealButton;
     Button hitButton;
     Button standButton;
-
     Button againButton;
     Button endButton;
-
     Button startButton;
 
     public static int width = 750;
@@ -25,19 +24,17 @@ public class Blackjack extends CardGame {
     static PImage deckImg;
     static PImage backgroundImg;
 
-    static PImage cardImg;
-
     boolean roundOver = false;
-    boolean newGame = true;
+    boolean gameOver = true;
 
-    int page = 0;
+    int page = 0; // Which page on the interface you are on
 
     PApplet app = new PApplet();
 
     @Override
     protected void initializeGame() {
-        // Initialize buttons
-        float[] buttonColor = { 255, 0, 0 };
+
+        float[] buttonColor = { 255, 0, 0 }; // Initialize buttons
         float[] textColor = { 255, 255, 255 };
 
         dealButton = new Button(buttonColor, textColor, "Deal");
@@ -76,24 +73,25 @@ public class Blackjack extends CardGame {
         startButton.x = width / 2;
         startButton.y = 525;
 
-        dealerHand = new BlackjackHand("dealer");
-        playerOneHand = new BlackjackHand("player");
-        
+        dealerHand = new BlackjackHand(); // Initialize hands
+        playerOneHand = new BlackjackHand();
+
         gameActive = true;
-        roundOver = false;
         playerOneTurn = true;
-        
+
         createDeck(app);
     }
-   
 
-    void createDeck(PApplet app) { // This Blackjack will be played with 3 decks
+    void createDeck(PApplet app) {
         deck = new ArrayList<>();
-        String[] suits = { "hearts", "diamonds", "clubs", "spades" };
-        String[] values = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king", "ace" };
-        for (String suit : suits) {
-            for (String value : values) {
-                deck.add(new Card(value, suit));
+
+        for (int i = 0; i < 3; i++) { // This game will be played with 3 decks
+            String[] suits = { "hearts", "diamonds", "clubs", "spades" };
+            String[] values = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king", "ace" };
+            for (String suit : suits) {
+                for (String value : values) {
+                    deck.add(new Card(value, suit));
+                }
             }
         }
 
@@ -106,7 +104,7 @@ public class Blackjack extends CardGame {
         drawCard(dealerHand);
     }
 
-    public void drawCard(BlackjackHand hand) {
+    public void drawCard(BlackjackHand hand) { // Draw a card for a hand, and reposition that hand
         if (deck != null && !deck.isEmpty()) {
             hand.addCard(deck.remove(0));
         } else if (discardPile != null && discardPile.size() > 1) {
@@ -131,69 +129,72 @@ public class Blackjack extends CardGame {
         }
     }
 
-
     public void handleButtonClick(int mouseX, int mouseY) {
         if (page == 0) {
-            if (dealButton.isClicked(mouseX, mouseY)) {
+            if (dealButton.isClicked(mouseX, mouseY)) { // Deal button
                 initialDeal();
+                page = 1;
             }
-            page = 1;
+        
         } else if (page == 1) {
-            if (hitButton.isClicked(mouseX, mouseY) && playerOneTurn) {
+            if (hitButton.isClicked(mouseX, mouseY) && gameActive) { // Hit button
                 drawCard(playerOneHand);
-            } else if (standButton.isClicked(mouseX, mouseY) && playerOneTurn) {
-                playerOneTurn = false;
+            } else if (standButton.isClicked(mouseX, mouseY) && gameActive) { // Stand button
+                gameActive = false; // gameActive: whether or not player can hit or stand
+                playerOneTurn = false; // playerOneTurn: Determines whether or not it's the dealer's turn to play. This
+                                       // is different from gameActive because if you bust, there is 1 second where
+                                       // gameActive is false but playerOneTurn is still true
             }
+       
         } else if (page == 2) {
-            if (againButton.isClicked(mouseX, mouseY)) {
-                playerOneHand = new BlackjackHand("player");
-                dealerHand = new BlackjackHand("dealer");
+            if (againButton.isClicked(mouseX, mouseY)) { // Another round button
+                playerOneHand = new BlackjackHand();
+                dealerHand = new BlackjackHand();
                 shuffleDeckBeginning();
                 playerOneTurn = true;
                 page = 0;
                 roundOver = false;
                 gameActive = true;
-            } else if (endButton.isClicked(mouseX, mouseY)) {
+            } else if (endButton.isClicked(mouseX, mouseY)) { // End game button
                 page = 3;
             }
-        }
-        
-        if (page == 3) {
-            if (startButton.isClicked(mouseX, mouseY)) {
+
+        } else if (page == 3) {
+            if (startButton.isClicked(mouseX, mouseY)) { // New game button
                 shuffleDeckBeginning();
-                playerOneHand = new BlackjackHand("player");
-                dealerHand = new BlackjackHand("dealer"); 
+                playerOneHand = new BlackjackHand();
+                dealerHand = new BlackjackHand();
                 page = 0;
                 playerMoney = 0;
                 roundOver = false;
                 playerOneTurn = true;
                 gameActive = true;
-                newGame = true;
+                gameOver = true;
             }
         }
     }
 
-    void shuffleDeckBeginning() {
-        for (int i = 0; i < playerOneHand.getSize(); i = i +1){
+    void shuffleDeckBeginning() { // Reset deck + shuffle
+        for (int i = 0; i < playerOneHand.getSize(); i = i + 1) {
             Card reshuffle = playerOneHand.getCard(i);
             deck.add(reshuffle);
             playerOneHand.removeCard(reshuffle);
         }
-                for (int i = 0; i < dealerHand.getSize(); i = i +1){
+        for (int i = 0; i < dealerHand.getSize(); i = i + 1) {
             Card reshuffle = dealerHand.getCard(i);
             deck.add(reshuffle);
             dealerHand.removeCard(reshuffle);
         }
+        
         Collections.shuffle(deck);
     }
-
 
     @Override
     public void handleComputerTurn() {
         drawCard(dealerHand);
     }
 
-    String determineWinner() {
+    String determineWinner() { // Determine final message after round
         int pScore = playerOneHand.calculateScore();
         int dScore = dealerHand.calculateScore();
 
@@ -235,13 +236,6 @@ public class Blackjack extends CardGame {
 
         roundOver = true;
 
-    }
-
-    @Override
-    public void drawChoices(PApplet app) {
-        dealButton.draw(app);
-        hitButton.draw(app);
-        standButton.draw(app);
     }
 
 }
