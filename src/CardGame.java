@@ -41,7 +41,6 @@ public class CardGame {
 
     public CardGame() {
         initializeGame();
-        //dealCards(2);
     }
 
     protected void initializeGame() {

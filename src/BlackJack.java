@@ -25,13 +25,18 @@ public class Blackjack extends CardGame {
     static PImage deckImg;
     static PImage backgroundImg;
 
+    static PImage cardImg;
+
     boolean roundOver = false;
     boolean newGame = true;
 
     int page = 0;
 
+    PApplet app = new PApplet();
+
     @Override
     protected void initializeGame() {
+       
         page = 0;
         roundOver = false;
         // Initialize buttons
@@ -74,25 +79,25 @@ public class Blackjack extends CardGame {
         startButton.x = width / 2;
         startButton.y = 525;
 
-        // Initialize decks
-        deck = new ArrayList<>();
-        discardPile = new ArrayList<>();
         dealerHand = new BlackjackHand("dealer");
         playerOneHand = new BlackjackHand("player");
         gameActive = true;
-
         playerOneTurn = true;
-
-        deck = new ArrayList<>();
-        createDeck();
-        Collections.shuffle(deck);
+        createDeck(app);
     }
+   
 
-    @Override
-    protected void createDeck() { // This Blackjack will be played with 3 decks
-        for (int i = 0; i < 3; i++) {
-            super.createDeck();
+    void createDeck(PApplet app) { // This Blackjack will be played with 3 decks
+        deck = new ArrayList<>();
+        String[] suits = { "hearts", "diamonds", "clubs", "spades" };
+        String[] values = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king", "ace" };
+        for (String suit : suits) {
+            for (String value : values) {
+                deck.add(new Card(value, suit));
+                System.out.println("Finished loading");
+            }
         }
+
     }
 
     public void drawCard(BlackjackHand hand) {
@@ -122,11 +127,10 @@ public class Blackjack extends CardGame {
 
     public void handleButtonClick(int mouseX, int mouseY) {
         if (page == 0) {
-            initializeGame();
             if (dealButton.isClicked(mouseX, mouseY)) {
                 initialDeal();
-                page = 1;
             }
+            page = 1;
         } else if (page == 1) {
             if (hitButton.isClicked(mouseX, mouseY) && playerOneTurn) {
                 drawCard(playerOneHand);
@@ -135,24 +139,46 @@ public class Blackjack extends CardGame {
             }
         } else if (page == 2) {
             if (againButton.isClicked(mouseX, mouseY)) {
-                initializeGame();
-                newGame = false;
+                playerOneHand = new BlackjackHand("player");
+                dealerHand = new BlackjackHand("dealer");
+                shuffleDeckBeginning();
+                playerOneTurn = true;
+                page = 0;
+                roundOver = false;
+                gameActive = true;
             } else if (endButton.isClicked(mouseX, mouseY)) {
                 page = 3;
-                System.out.println("got to page 3!");
             }
-        } if (page == 3){
-            if (startButton.isClicked(mouseX, mouseY)){
-                initializeGame();
+        }
+        
+        if (page == 3) {
+            if (startButton.isClicked(mouseX, mouseY)) {
+                shuffleDeckBeginning();
+                page = 0;
+                roundOver = false;
                 playerMoney = 0;
                 newGame = true;
             }
         }
     }
 
+    void shuffleDeckBeginning() {
+        for (int i = 0; i < playerOneHand.getSize(); i = i +1){
+            Card reshuffle = playerOneHand.getCard(i);
+            deck.add(reshuffle);
+            playerOneHand.removeCard(reshuffle);
+        }
+                for (int i = 0; i < dealerHand.getSize(); i = i +1){
+            Card reshuffle = dealerHand.getCard(i);
+            deck.add(reshuffle);
+            dealerHand.removeCard(reshuffle);
+        }
+        Collections.shuffle(deck);
+    }
+
     public void initialDeal() { // Deals 2 cards to player and dealer
-        drawCard(playerOneHand);
-        drawCard(playerOneHand);
+        drawCard(this.playerOneHand);
+        drawCard(this.playerOneHand);
         drawCard(dealerHand);
         drawCard(dealerHand);
     }
@@ -185,22 +211,22 @@ public class Blackjack extends CardGame {
         }
     }
 
-    void updateBalance(){
-         int pScore = playerOneHand.calculateScore();
+    void updateBalance() {
+        int pScore = playerOneHand.calculateScore();
         int dScore = dealerHand.calculateScore();
 
         if (pScore > 21) {
-                playerMoney -= 5;
+            playerMoney -= 5;
         } else if (dScore > 21) {
             playerMoney += 5;
-          
+
         } else if (pScore > dScore) {
             playerMoney += 5;
-            
+
         } else if (dScore > pScore) {
             playerMoney -= 5;
-           
-        } 
+
+        }
 
     }
 

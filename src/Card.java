@@ -72,7 +72,8 @@ public class Card extends ClickableRectangle {
     public void drawFront(PApplet sketch) {
         if (img != null) {
             sketch.image(img, x, y, width, height);
-        } else {
+        }
+        else {
             sketch.fill(255);
             sketch.rect(x, y, width, height);
             sketch.fill(0);

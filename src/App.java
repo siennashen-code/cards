@@ -15,10 +15,15 @@ public class App extends PApplet {
         Blackjack.deckImg = loadImage("deckImg.png");
         Blackjack.backgroundImg = loadImage("background.jpg");
         cardGame.initializeGame();
+        for (Card c : cardGame.deck) {
+            c.img = loadImage("cardFaces/" + c.value + "_of_" + c.suit + ".png");
+        }
+
     }
 
     @Override
     public void draw() {
+
         imageMode(CENTER);
         image(Blackjack.backgroundImg, width / 2, height / 2, 750, 700);
 
@@ -33,21 +38,29 @@ public class App extends PApplet {
 
             image(Blackjack.deckImg, width / 2, height / 2, 160, 200);
             cardGame.dealButton.draw(this);
-        } else if (cardGame.page == 1) {
-            imageMode(CENTER);
-            image(Blackjack.deckImg, width / 2, height / 2, 160, 200);
-            gamePlay();
-
-        } else if (cardGame.page == 2){
-            roundOver();
         } else {
-            endPage();
+            cardGame.dealerHand.draw(this);
+            cardGame.playerOneHand.draw(this);
+            
+            if (cardGame.page == 1) {
+                imageMode(CENTER);
+                image(Blackjack.deckImg, width / 2, height / 2, 160, 200);
+                gamePlay();
+
+            } else if (cardGame.page == 2) {
+                push();
+                fill(100, 100, 100, 200);
+                rect(0,0, 750, 700);
+                pop();
+
+                roundOver();
+            } else if (cardGame.page == 3) {
+                endPage();
+            }
         }
     }
 
     public void gamePlay() {
-        cardGame.dealerHand.draw(this);
-        cardGame.playerOneHand.draw(this);
 
         if (cardGame.playerOneTurn) {
             if (cardGame.gameActive) {
@@ -68,7 +81,7 @@ public class App extends PApplet {
         } else {
             push();
             textAlign(CENTER, CENTER);
-            text("Dealer's turn...", width/2, 50);
+            text("Dealer's turn...", width / 2, 50);
             pop();
             if (timer == 60) {
                 timer = 0;
@@ -92,6 +105,7 @@ public class App extends PApplet {
             cardGame.roundOver = true;
         }
 
+        textSize(30);
         text(cardGame.determineWinner(), width / 2, height / 2);
 
         cardGame.againButton.draw(this);
@@ -99,24 +113,27 @@ public class App extends PApplet {
 
         push();
         textAlign(RIGHT, TOP);
-        if(cardGame.playerMoney < 0){ text("Balance: -$" + cardGame.playerMoney*-1, width-10, 10);}
-        else { text("Balance: $" + cardGame.playerMoney, width - 10, 10);}
+        if (cardGame.playerMoney < 0) {
+            text("Balance: -$" + cardGame.playerMoney * -1, width - 10, 10);
+        } else {
+            text("Balance: $" + cardGame.playerMoney, width - 10, 10);
+        }
         pop();
 
         pop();
     }
 
-    public void endPage(){
+    public void endPage() {
         cardGame.startButton.draw(this);
 
         push();
         textAlign(CENTER, CENTER);
-        if (cardGame.playerMoney > 0 ){
-            text("You're a pro gambler! You earned $" + cardGame.playerMoney + "!", width/2, height/2);
-        } else if (cardGame.playerMoney == 0){
-            text("You earned nothing!", width/2, height/2);
+        if (cardGame.playerMoney > 0) {
+            text("You're a pro gambler! You earned $" + cardGame.playerMoney + "!", width / 2, height / 2);
+        } else if (cardGame.playerMoney == 0) {
+            text("You earned nothing!", width / 2, height / 2);
         } else {
-            text("Better quit gambling! You lost $" + -1*cardGame.playerMoney + "!", width/2, height/2);
+            text("Better quit gambling! You lost $" + -1 * cardGame.playerMoney + "!", width / 2, height / 2);
         }
 
         pop();
@@ -125,7 +142,6 @@ public class App extends PApplet {
     @Override
     public void mousePressed() {
         cardGame.handleButtonClick(mouseX, mouseY);
-
     }
 
 }
