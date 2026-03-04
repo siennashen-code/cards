@@ -18,12 +18,10 @@ public class App extends PApplet {
         for (Card c : cardGame.deck) {
             c.img = loadImage("cardFaces/" + c.value + "_of_" + c.suit + ".png");
         }
-
     }
 
     @Override
     public void draw() {
-
         imageMode(CENTER);
         image(Blackjack.backgroundImg, width / 2, height / 2, 750, 700);
 
@@ -35,25 +33,29 @@ public class App extends PApplet {
                 text("LET'S PLAY BLACKJACK", width / 2, 100);
             }
             pop();
-
             image(Blackjack.deckImg, width / 2, height / 2, 160, 200);
+
+            checkHover(cardGame.dealButton);
             cardGame.dealButton.draw(this);
         } else {
-            cardGame.dealerHand.draw(this);
-            cardGame.playerOneHand.draw(this);
-            
+
             if (cardGame.page == 1) {
+                cardGame.dealerHand.draw(this);
+                cardGame.playerOneHand.draw(this);
                 imageMode(CENTER);
                 image(Blackjack.deckImg, width / 2, height / 2, 160, 200);
                 gamePlay();
 
             } else if (cardGame.page == 2) {
+                cardGame.dealerHand.draw(this);
+                cardGame.playerOneHand.draw(this);
                 push();
                 fill(100, 100, 100, 200);
-                rect(0,0, 750, 700);
+                rect(0, 0, 750, 700);
                 pop();
 
-                roundOver();
+                gamePlayOver();
+
             } else if (cardGame.page == 3) {
                 endPage();
             }
@@ -61,9 +63,10 @@ public class App extends PApplet {
     }
 
     public void gamePlay() {
-
         if (cardGame.playerOneTurn) {
             if (cardGame.gameActive) {
+                checkHover(cardGame.hitButton);
+                checkHover(cardGame.standButton);
                 cardGame.hitButton.draw(this);
                 cardGame.standButton.draw(this);
             }
@@ -96,18 +99,19 @@ public class App extends PApplet {
 
     }
 
-    public void roundOver() {
+    public void gamePlayOver() {
         push();
         textAlign(CENTER, CENTER);
 
         if (!cardGame.roundOver) {
             cardGame.updateBalance();
-            cardGame.roundOver = true;
         }
 
         textSize(30);
         text(cardGame.determineWinner(), width / 2, height / 2);
 
+        checkHover(cardGame.againButton);
+        checkHover(cardGame.endButton);
         cardGame.againButton.draw(this);
         cardGame.endButton.draw(this);
 
@@ -124,10 +128,12 @@ public class App extends PApplet {
     }
 
     public void endPage() {
+        checkHover(cardGame.startButton);
         cardGame.startButton.draw(this);
 
         push();
         textAlign(CENTER, CENTER);
+        textSize(40);
         if (cardGame.playerMoney > 0) {
             text("You're a pro gambler! You earned $" + cardGame.playerMoney + "!", width / 2, height / 2);
         } else if (cardGame.playerMoney == 0) {
@@ -142,6 +148,22 @@ public class App extends PApplet {
     @Override
     public void mousePressed() {
         cardGame.handleButtonClick(mouseX, mouseY);
+    }
+
+    void checkHover(Button button) {
+        float[] rectColor = { 255, 0, 0 };
+        float[] textColor = { 255, 255, 255 };
+        float[] hoverRectColor = { 255, 255, 255 };
+        float[] hoverTextColor = { 255, 0, 0 };
+
+        if (button.isClicked(mouseX, mouseY)) {
+            button.rectColor = hoverRectColor;
+            button.textColor = hoverTextColor;
+        } else {
+            button.rectColor = rectColor;
+            button.textColor = textColor;
+
+        }
     }
 
 }

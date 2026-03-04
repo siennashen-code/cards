@@ -14,6 +14,7 @@ public class Button extends ClickableRectangle {
     @Override
     public void draw(PApplet app) {
         app.push();
+        app.noStroke();
         app.rectMode(app.CENTER);
         app.textAlign(app.CENTER, app.CENTER);
 

@@ -36,9 +36,6 @@ public class Blackjack extends CardGame {
 
     @Override
     protected void initializeGame() {
-       
-        page = 0;
-        roundOver = false;
         // Initialize buttons
         float[] buttonColor = { 255, 0, 0 };
         float[] textColor = { 255, 255, 255 };
@@ -81,8 +78,11 @@ public class Blackjack extends CardGame {
 
         dealerHand = new BlackjackHand("dealer");
         playerOneHand = new BlackjackHand("player");
+        
         gameActive = true;
+        roundOver = false;
         playerOneTurn = true;
+        
         createDeck(app);
     }
    
@@ -94,10 +94,16 @@ public class Blackjack extends CardGame {
         for (String suit : suits) {
             for (String value : values) {
                 deck.add(new Card(value, suit));
-                System.out.println("Finished loading");
             }
         }
 
+    }
+
+    public void initialDeal() { // Deals 2 cards to player and dealer
+        drawCard(this.playerOneHand);
+        drawCard(this.playerOneHand);
+        drawCard(dealerHand);
+        drawCard(dealerHand);
     }
 
     public void drawCard(BlackjackHand hand) {
@@ -124,6 +130,7 @@ public class Blackjack extends CardGame {
             hand.positionCards(start, 110, 80, 120, 90);
         }
     }
+
 
     public void handleButtonClick(int mouseX, int mouseY) {
         if (page == 0) {
@@ -154,9 +161,13 @@ public class Blackjack extends CardGame {
         if (page == 3) {
             if (startButton.isClicked(mouseX, mouseY)) {
                 shuffleDeckBeginning();
+                playerOneHand = new BlackjackHand("player");
+                dealerHand = new BlackjackHand("dealer"); 
                 page = 0;
-                roundOver = false;
                 playerMoney = 0;
+                roundOver = false;
+                playerOneTurn = true;
+                gameActive = true;
                 newGame = true;
             }
         }
@@ -176,12 +187,6 @@ public class Blackjack extends CardGame {
         Collections.shuffle(deck);
     }
 
-    public void initialDeal() { // Deals 2 cards to player and dealer
-        drawCard(this.playerOneHand);
-        drawCard(this.playerOneHand);
-        drawCard(dealerHand);
-        drawCard(dealerHand);
-    }
 
     @Override
     public void handleComputerTurn() {
@@ -227,6 +232,8 @@ public class Blackjack extends CardGame {
             playerMoney -= 5;
 
         }
+
+        roundOver = true;
 
     }
 
